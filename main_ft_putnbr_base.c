@@ -1,21 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.h                                        :+:      :+:    :+:   */
+/*   main_ft_putnbr_base.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mchernyu <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/26 10:20:10 by mchernyu          #+#    #+#             */
-/*   Updated: 2021/11/26 10:26:06 by mchernyu         ###   ########.fr       */
+/*   Created: 2021/11/26 11:47:07 by mchernyu          #+#    #+#             */
+/*   Updated: 2021/11/26 16:17:18 by mchernyu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_PRINTF_H
-# define FT_PRINTF_H
+void ft_putnbr_base(unsigned long long n, unsigned long long base);
 
-#include <stdarg.h>
-#include <unistd.h>
+int main(void)
+{
+	unsigned long long  n = 255;
+	int base = 16;
 
-int ft_printf(const char *s, ...);
-
-#endif
+	ft_putnbr_base(n, base);
+}
