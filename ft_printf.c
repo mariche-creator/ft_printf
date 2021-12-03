@@ -1,27 +1,23 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ft_printf.c                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mchernyu <marvin@42.fr>                    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/18 13:40:02 by mchernyu          #+#    #+#             */
-/*   Updated: 2021/11/26 17:36:46 by mchernyu         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "ft_printf.h"
+#include <stdio.h>
+#define DEC 10
+#define HEX 16
+#define BASE_DEC "0123456789"
+#define BASE_HEX "0123456789abcdef"
+#define BASE_HEX_U "0123456789ABCDEF"
 
-void ft_putnbr(unsigned long long n, unsigned int base);
+void ft_putnbr(unsigned long long n, unsigned int base, short up, int *count);
 
-int	ft_printf(const char *s, ...)
+int ft_printf(const char *s, ...)
 {
-	va_list	list;
-    int		i;
-    char	*tmp;
-    char	temp;
+    va_list list;
+    int i;
+    int count;
+    char *tmp;
+    long long temp;
 
     i = 0;
+    count = 0;
     va_start(list, s);
     while (s[i] != '\0') 
     {
@@ -29,11 +25,15 @@ int	ft_printf(const char *s, ...)
         {
             i++;
             if (s[i] == '%')
+            {    
                 write(1, "%", 1);
+                count++;
+            }    
             if (s[i] == 'c')
             {
                 temp = va_arg(list, int);
                 write(1, &temp, 1);
+                count++;
             }
             if (s[i] == 's')
             {
@@ -41,54 +41,89 @@ int	ft_printf(const char *s, ...)
                 while (*tmp != '\0')
                 {
                     write(1, tmp, 1);
+                    count++;
                     tmp++;
                 }
             }
             if (s[i] == 'p')
             {
                 tmp = va_arg(list, void *);
-				write(1, "0x", 2);
-                ft_putnbr((unsigned long long)tmp, 16);
-            } 
+                write(1, "0x", 2);
+                count += 2;
+                ft_putnbr((unsigned long long)tmp, HEX, 0, &count);
+            }
+            if (s[i] == 'd' || s[i] == 'i')
+            {
+                temp = va_arg(list, int);
+                if (temp < 0)
+                {
+                    write(1, "-", 1);
+                    count++;
+                    temp *=(-1);
+                }
+                ft_putnbr((unsigned long long)temp, DEC, 0, &count);
+            }
+            if (s[i] == 'u')
+            {
+                temp = va_arg(list, unsigned int);
+                ft_putnbr((unsigned long long)temp, DEC, 0, &count);
+            }
+            if (s[i] == 'x')
+            {
+                temp = va_arg(list, int);
+                ft_putnbr((unsigned long long)temp, HEX, 0, &count);
+            }
+            if (s[i] == 'X')
+            {
+                temp = va_arg(list, int);
+                ft_putnbr((unsigned long long)temp, HEX, 1, &count);
+            }
         }
         else   
+        {
             write(1, &s[i], 1);
+            count++;
+        }
         i++;
     }
     va_end(list);
-    return (0);		
+    return (count);
 }
 
-void ft_putnbr(unsigned long long n, unsigned int base)
+void    ft_putnbr(unsigned long long n, unsigned int base, short up, int *count)
 {
-	char	*base_hex;
-	char	*base_dec;
-
-	base_hex = "0123456789abcdef";
-	base_dec = "0123456789";
-	if (n < 0)
-	{
-		write(1, "-", 1);
-		n *= (-1);
-	}
-	if (n >= base)
-	{
-		if (base == 16)
-		{
-			ft_putnbr(n / base, 16);
-			write(1, &base_hex[n % base], 1);
-		}
-		else
-		{
-			ft_putnbr(n / base, 10);
-			write(1, &base_dec[n % base], 1);
-		}
-	}
-	if (n < base)
-	{
-		if (base == 16)
-			write(1, &base_hex[n], 1);
-		if (base == 10)
-			write(1, &base_dec[n], 1);
-	}
+    if (n >= base)
+    {
+        if (base == 16 && up != 1)
+        {
+            ft_putnbr(n / base, base, 0, count);
+            write(1, &BASE_HEX[n % base], 1);
+            *(count) += 1;
+        }
+        else if(base == 16 && up == 1)
+        {
+            ft_putnbr(n / base, base, 1, count);
+            write(1, &BASE_HEX_U[n % base], 1);
+            *(count) += 1;
+        }
+        else
+        {
+            ft_putnbr(n / base, base, 0, count);
+            write(1, &BASE_DEC[n % base], 1);
+            *(count) += 1;
+        }
+    }
+    else
+    {
+        if (base == 16)
+        {
+            write(1, &BASE_HEX[n], 1);
+            *(count) += 1;
+        }
+        else
+        {
+            write(1, &BASE_DEC[n], 1);
+            *(count) += 1;
+        }
+    }
 }
