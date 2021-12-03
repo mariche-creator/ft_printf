@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main_ft_printf.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mchernyu <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/11/26 10:21:44 by mchernyu          #+#    #+#             */
+/*   Updated: 2021/12/03 16:01:37 by mchernyu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ft_printf.h"
 #include <stdio.h>
 
@@ -14,7 +26,8 @@ int main(void)
     unsigned int a = 4294967295;
     int temp = 0;
     int b = 500;
-    int c = 500;
+    int c = -1;
+	char *s = NULL;
     temp = ft_printf("My character, %%, string: %c, %c, %%%%, %c, %s\n", l, m, n, str1);
     printf("My return: %d\n", temp);
     temp = printf("Or character, %%, string: %c, %c, %%%%, %c, %s\n", l, m, n, str1);
@@ -43,5 +56,10 @@ int main(void)
     printf ("Or return: %d\n", temp);
     temp = printf("Or hex uppercase: %X\n", c);
     printf("Or return: %d\n", temp);
+    temp = ft_printf("My null string: %s\n", s);
+	printf("My return: %d\n", temp);
+	temp = printf("Or null string: %s\n", s);
+	printf("My return: %d\n", temp);
     return (0);
 }
+

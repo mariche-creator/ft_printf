@@ -1,58 +1,54 @@
-#include "ft_printf.h"
-#include <stdio.h>
-#define DEC 10
-#define HEX 16
-#define BASE_DEC "0123456789"
-#define BASE_HEX "0123456789abcdef"
-#define BASE_HEX_U "0123456789ABCDEF"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_printf.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mchernyu <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/12/03 13:20:59 by mchernyu          #+#    #+#             */
+/*   Updated: 2021/12/03 17:53:13 by mchernyu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-void ft_putnbr(unsigned long long n, unsigned int base, short up, int *count);
+#include "ft_printf.h"
+
+//void ft_putnbr(unsigned long long n, unsigned int base, short up, int *count);
 
 int ft_printf(const char *s, ...)
 {
     va_list list;
-    int i;
     int count;
     char *tmp;
     long long temp;
 
-    i = 0;
     count = 0;
     va_start(list, s);
-    while (s[i] != '\0') 
+    while (*s != '\0') 
     {
-        if (s[i] == '%')
+        if (*s == '%')
         {
-            i++;
-            if (s[i] == '%')
-            {    
-                write(1, "%", 1);
-                count++;
-            }    
-            if (s[i] == 'c')
+            s++;
+            if (*s == '%')
+				ft_percent(&count);		
+            if (*s == 'c')
             {
                 temp = va_arg(list, int);
-                write(1, &temp, 1);
-                count++;
+                ft_character(&temp, &count);
             }
-            if (s[i] == 's')
+            if (*s == 's')
             {
                 tmp = va_arg(list, char *);
-                while (*tmp != '\0')
-                {
-                    write(1, tmp, 1);
-                    count++;
-                    tmp++;
-                }
+				ft_string(tmp, &count);
             }
-            if (s[i] == 'p')
+            if (*s == 'p')
             {
                 tmp = va_arg(list, void *);
-                write(1, "0x", 2);
+				ft_address(tmp, &count);
+                /*write(1, "0x", 2);
                 count += 2;
-                ft_putnbr((unsigned long long)tmp, HEX, 0, &count);
+                ft_putnbr((unsigned long long)tmp, HEX, 0, &count);*/
             }
-            if (s[i] == 'd' || s[i] == 'i')
+            if (*s == 'd' || *s == 'i')
             {
                 temp = va_arg(list, int);
                 if (temp < 0)
@@ -61,36 +57,48 @@ int ft_printf(const char *s, ...)
                     count++;
                     temp *=(-1);
                 }
-                ft_putnbr((unsigned long long)temp, DEC, 0, &count);
+                ft_putnbr((unsigned long long)temp, DEC, 0, *count);
             }
-            if (s[i] == 'u')
+            if (*s == 'u')
             {
                 temp = va_arg(list, unsigned int);
-                ft_putnbr((unsigned long long)temp, DEC, 0, &count);
+                ft_putnbr((unsigned long long)temp, DEC, 0, *count);
             }
-            if (s[i] == 'x')
+            if (*s == 'x')
             {
-                temp = va_arg(list, int);
-                ft_putnbr((unsigned long long)temp, HEX, 0, &count);
+                temp = va_arg(list, unsigned int);
+                if (temp < 0)
+                {
+                    write(1, "-", 1);
+                    count++;
+                    temp *=(-1);
+                }
+                ft_putnbr((unsigned long long)temp, HEX, 0, *count);
             }
-            if (s[i] == 'X')
+            if (*s == 'X')
             {
-                temp = va_arg(list, int);
-                ft_putnbr((unsigned long long)temp, HEX, 1, &count);
+                temp = va_arg(list, unsigned int);
+				if (temp < 0)
+                {
+                    write(1, "-", 1);
+                    count++;
+                    temp *=(-1);
+                }
+                ft_putnbr((unsigned long long)temp, HEX, 1, *count);
             }
         }
         else   
         {
-            write(1, &s[i], 1);
+            write(1, s, 1);
             count++;
         }
-        i++;
+        s++;
     }
     va_end(list);
     return (count);
 }
 
-void    ft_putnbr(unsigned long long n, unsigned int base, short up, int *count)
+/*void    ft_putnbr(unsigned long long n, unsigned int base, short up, int *count)
 {
     if (n >= base)
     {
@@ -100,7 +108,7 @@ void    ft_putnbr(unsigned long long n, unsigned int base, short up, int *count)
             write(1, &BASE_HEX[n % base], 1);
             *(count) += 1;
         }
-        else if(base == 16 && up == 1)
+        else if (base == 16 && up == 1)
         {
             ft_putnbr(n / base, base, 1, count);
             write(1, &BASE_HEX_U[n % base], 1);
@@ -115,15 +123,20 @@ void    ft_putnbr(unsigned long long n, unsigned int base, short up, int *count)
     }
     else
     {
-        if (base == 16)
+        if (base == 16 && up != 1)
         {
             write(1, &BASE_HEX[n], 1);
             *(count) += 1;
         }
+		else if (base == 16 && up == 1)
+		{
+			write(1, &BASE_HEX_U[n], 1);
+			*(count) += 1;
+		}
         else
         {
             write(1, &BASE_DEC[n], 1);
             *(count) += 1;
         }
     }
-}
+}*/
