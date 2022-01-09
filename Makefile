@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mchernyu <marvin@42.fr>                    +#+  +:+       +#+         #
+#    By: mchernyu <mchernyu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/10/20 10:26:33 by mchernyu          #+#    #+#              #
-#    Updated: 2021/12/03 17:26:05 by mchernyu         ###   ########.fr        #
+#    Updated: 2022/01/09 08:20:01 by mchernyu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,24 +14,30 @@ NAME = libftprintf.a
 
 SRCS = ft_printf.c ft_printf_utils.c
 
-OBJS = ${SRCS:.c=.o}
+OBJS = ${patsubst %.c,%.o,${SRCS}}
+
+HEADER=${patsubst %.c,%.d,${SRCS}}
 
 CC = gcc
 
 CFLAGS = -Wall -Wextra -Werror
 
-.c.o:
-	${CC} ${CFLAGS} -g -c $< -o ${<:.c=.o}
-
-$(NAME): ${OBJS}
-	ar rcs ${NAME} ${OBJS}
-
 all: ${NAME}
 
+$(NAME): ${OBJS}
+	ar rcs ${NAME} $?
+
+%.o: %.c
+	${CC} ${CFLAGS} -c $< -o $@ -MD
+
+include ${wildcard ${HEADER}}
+
 clean:
-	rm -f ${OBJS}
+	rm -f ${OBJS} ${HEADER}
 
 fclean: clean
 	rm -f ${NAME}
 
 re: fclean all
+
+.PHONY : all clean fclean re
